@@ -7,10 +7,13 @@ A complex physical system characterized by a wide range of temporal and spatial 
 
 This repository contains tutorial Python scripts used to generated results published in the <<Wang2017Physics>> and <<Wu2018Data>>.
 
+Please send bug reports and comments to: Heng Xiao (hengxiao@vt.edu) +
 
 
+[bibliography]
 References
 ----------
+
 [bibliography]
 
 - [[[Wang2017Physics]]] J.-X. Wang, J.-L. Wu, and H. Xiao. Physics informed machine learning approach for reconstructing Reynolds stress modeling discrepancies based on DNS data. Physical Review Fluids. 2(3), 034603, 1-22, 2017. https://doi.org/10.1103/PhysRevFluids.2.034603[DOI:10.1103/PhysRevFluids.2.034603]
