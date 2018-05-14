@@ -33,11 +33,7 @@ def loadTestData(caseName, ReNum):
 
 def randomForest(trainFeatures, trainResponses, testFeatures, maxFeatures = 'log2', nTree=100):
     ## Settings of random forests regressor
-    regModel = RandomForestRegressor(n_estimators=nTree, criterion='mse', \
-               max_depth=None, min_samples_split=1.0, min_samples_leaf=1, \
-               min_weight_fraction_leaf=0.0, max_features=maxFeatures, \
-               max_leaf_nodes=None, bootstrap=True, oob_score=True, n_jobs=10, \
-               random_state=None, verbose=0, warm_start=False)
+    regModel = RandomForestRegressor(n_estimators=nTree, max_features=maxFeatures)
     ## Train the random forests regressor
     regModel.fit(trainFeatures, trainResponses)
     ## Prediction
@@ -50,7 +46,7 @@ def plotXiEta(XiEta_RANS, testResponses, testResponsesPred):
     XiEta_ML = XiEta_RANS + testResponsesPred
     # Plot Reynolds stress anisotropy in Barycentric triangle
     interval = 1
-    pointsNum = XiEta_RANS.shape[0]/2
+    pointsNum = int(XiEta_RANS.shape[0]/2)
     plt.figure()
     plt.plot([0,1,0.5,0.5,0],[0,0,3**0.5/2.0,3**0.5/2.0,0],'g-')
     p1, = plt.plot(XiEta_RANS[:pointsNum:interval,0],XiEta_RANS[:pointsNum:interval,1],\
