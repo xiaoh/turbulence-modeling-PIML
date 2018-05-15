@@ -18,4 +18,6 @@ References
 
 - [[[Wang2017Physics]]] J.-X. Wang, J.-L. Wu, and H. Xiao. Physics informed machine learning approach for reconstructing Reynolds stress modeling discrepancies based on DNS data. Physical Review Fluids. 2(3), 034603, 1-22, 2017. https://doi.org/10.1103/PhysRevFluids.2.034603[DOI:10.1103/PhysRevFluids.2.034603]
 
-- [[[Wu2018Data]]] J.-L. Wu, H. Xiao and E. G. Paterson. Data-driven augmentation of turbulence models with physics-informed machine learning. Submitted, 2018. Also available at:  https://arxiv.org/abs/1801.02762[arXiv:1801.02762]
+- [[[Wu2018Data]]] J.-L. Wu, H. Xiao and E. G. Paterson. Data-driven augmentation of turbulence models with physics-informed machine learning. Submitted, 2018. Also available at:  https://arxiv.org/abs/1801.02762[arXiv:1801.02762] Note: Part of this manuscript is presented in <<Wang2017Comprehensive>>.
+
+- [[[Wang2017Comprehensive]]] Wang, Jian-Xun, Jinlong Wu, Julia Ling, Gianluca Iaccarino, and Heng Xiao. “A Comprehensive Physics-Informed Machine Learning Framework for Predictive Turbulence Modeling.” ArXiv:1701.07102  http://arxiv.org/abs/1701.07102[arXiv:1701.07102]
