@@ -10,13 +10,7 @@ from IPython.display import Image
 # # Overview
 # This code implements the PIML regresson procedure described in Wang et al. 2017, with the case of flow over periodic hills as example. 
 # 
-# The input features consist of 12 variables (see Table 1 below and also Wang et al.)
-
-# In[4]:
-
-
-Image(filename='figs/features.png')
-
+# * J.-X. Wang, J.-L. Wu, and H. Xiao. Physics informed machine learning approach for reconstructing Reynolds stress modeling discrepancies based on DNS data. Physical Review Fluids. 2(3), 034603, 1-22, 2017. https://doi.org/10.1103/PhysRevFluids.2.034603[DOI:10.1103/PhysRevFluids.2.034603]
 
 # # Algorithm of PIML-Based Turbulence Modeling
 # The overall procedure can be summarized as follows:
@@ -35,10 +29,10 @@ Image(filename='figs/features.png')
 #  	equations with the corrected Reynolds stress field.
 # 
 # 
-# **This code only performs Step 4.** The training data prepared in Steps 1-3 are saved in _database_ folder.
+# **This code only performs Step 4.** (see the green-shaded box below in the flow chart). The training data prepared in Steps 1-3 are saved in _database_ folder.
 # 
 
-# In[3]:
+# In[4]:
 
 
 Image(filename='figs/PIML-algorithm.png')
@@ -58,6 +52,14 @@ Image(filename='figs/PIML-algorithm.png')
 # * Neural networks (based on Tensorflow)
 # 
 # Both algorithms yielded similar results, but the former is cheaper computationally.
+
+# The input features consist of 12 variables (see Table 1 below and also Wang et al.)
+
+# In[4]:
+
+
+Image(filename='figs/features.png')
+
 
 # In[ ]:
 
@@ -82,6 +84,10 @@ def loadTrainingData(caseName, ReNum):
     trainFeatures = np.loadtxt(trainFeaturesFile)
     trainResponses = np.loadtxt(trainResponsesFile)
     return trainFeatures, trainResponses
+
+
+# In[ ]:
+
 
 def loadTestData(caseName, ReNum):
     testFeaturesFile = './database/' + caseName + '/markers/' + ReNum + '/markerFile'
