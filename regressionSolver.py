@@ -74,7 +74,11 @@ from sklearn.ensemble.forest import RandomForestRegressor
 import matplotlib.pyplot as plt  # for plotting
 #import matplotlib as mp
 
+# keras importing
+from keras.models import Sequential
+from keras.layers import Dense
 
+import time
 # In[2]:
 
 
@@ -109,7 +113,25 @@ def randomForest(trainFeatures, trainResponses, testFeatures, maxFeatures = 'log
     testResponsesPred = regModel.predict(testFeatures)
     return testResponsesPred
 
-
+def keras_nn(trainFeatures, trainResponses, testFeatures):
+    
+    '''
+    This function is to construct neural network based on the training data and predict the 
+    response given test data.
+    Two hidded layers are used, the number of neurals are 64 and 32, respectively.
+    '''
+    model = Sequential()
+    # The first hidder layer of NN
+    model.add(Dense(64, input_dim=trainFeatures.shape[1], activation='relu'))
+    # The second hidder layer of NN
+    model.add(Dense(32, activation='relu'))
+    model.add(Dense(2, activation='tanh'))
+    model.compile(loss='mean_squared_error', optimizer='adam')
+    # Training
+    model.fit(trainFeatures, trainResponses, epochs=100000, batch_size=200, verbose=0)
+    # Prediction
+    testResponsesPred = model.predict(testFeatures)
+    return testResponsesPred
 # In[4]:
 
 
@@ -148,6 +170,46 @@ def iterateLines(dataFolderRANS):
                          testResponsesPred[startIndex:endIndex,:])
     #plt.show()
 
+def comparePlot(XiEta_RANS, testResponses, testResponsesPred_RF, testResponsesPred_NN):
+    
+    XiEta_DNS = XiEta_RANS + testResponses
+    XiEta_RF = XiEta_RANS + testResponsesPred_RF
+    XiEta_NN = XiEta_RANS + testResponsesPred_NN
+    # Plot Reynolds stress anisotropy in Barycentric triangle
+    interval = 2
+    pointsNum = int(XiEta_RANS.shape[0])
+    plt.figure()
+    plt.plot([0,1,0.5,0.5,0],[0,0,3**0.5/2.0,3**0.5/2.0,0],'g-')
+    p1, = plt.plot(XiEta_RANS[:pointsNum:interval,0],XiEta_RANS[:pointsNum:interval,1],
+                   'bo', markerfacecolor='none', markeredgecolor='b',
+                   markeredgewidth=1.5, markersize=8)
+    p2, = plt.plot(XiEta_DNS[:pointsNum:interval,0],XiEta_DNS[:pointsNum:interval,1],
+                   'ks', markerfacecolor='none', markeredgecolor='k',
+                   markeredgewidth=1.5, markersize=8)
+    p3, = plt.plot(XiEta_RF[:pointsNum:interval,0],XiEta_RF[:pointsNum:interval,1],
+                   'r^', markerfacecolor='none', markeredgecolor='r',
+                   markeredgewidth=1.5, markersize=8)
+    p4, = plt.plot(XiEta_NN[:pointsNum:interval,0],XiEta_NN[:pointsNum:interval,1],
+                   'r+', markerfacecolor='none', markeredgecolor='g',
+                   markeredgewidth=1.5, markersize=8)
+    lg = plt.legend([p1,p2,p3, p4], ['RANS', 'DNS', 'RF', 'NN'], loc = 0)
+    lg.draw_frame(False)
+    plt.ylim([0,3**0.5/2.0])
+    plt.show()
+    
+def compareResults(dataFolderRANS, testResponses, testResponsesPred_RF, testResponsesPred_NN):
+    ## compare the results in one plot
+    # Start index of different sample lines
+    indexList = [0, 98, 191, 287, 385, 483, 581, 679, 777, 875, 971]
+    # Make plots at x=2 and x=4
+    for iterN in [3,5]:
+        XiEta = np.loadtxt(dataFolderRANS + 'line' + str(iterN) + '_XiEta.xy')
+        startIndex = indexList[iterN-1]
+        endIndex = indexList[iterN]
+        comparePlot(XiEta, testResponses[startIndex:endIndex,:], 
+                    testResponsesPred_RF[startIndex:endIndex,:], 
+                    testResponsesPred_NN[startIndex:endIndex,:])
+
 
 # Now, plot the anisotropy at the two locations $x/H = 2$ and 4:
 
@@ -164,9 +226,30 @@ if __name__== "__main__":
     # Load data
     trainFeatures, trainResponses = loadTrainingData('pehill', 'Re5600')
     testFeatures, testResponses = loadTestData('pehill', 'Re10595')
+    time_begin_RF = time.time()
     # Make prediction via the random forest regressor
-    testResponsesPred = randomForest(trainFeatures, trainResponses, testFeatures, 6, 100)
+    testResponsesPred_RF = randomForest(trainFeatures, trainResponses, testFeatures, 6, 100)
+    time_end_RF = time.time()
     # Make plots of Reynolds stress anisotropy
     dataFolderRANS = './database/pehill/XiEta-RANS/Re10595/'
-    iterateLines(dataFolderRANS)
+    iterateLines(dataFolderRANS, testResponses, testResponsesPred_RF, name='RF')
+    
+    time_begin_NN = time.time()
+    # Make prediction via the neural network
+    testResponsesPred_NN = keras_nn(trainFeatures, trainResponses, testFeatures)
+    time_end_NN = time.time()
+    # Make plots of Reynolds stress anisotropy
+    dataFolderRANS = './database/pehill/XiEta-RANS/Re10595/'
+    iterateLines(dataFolderRANS, testResponses, testResponsesPred_NN, name='NN')
+    # The cost time of calculation
+    cost_time_RF = time_end_RF - time_begin_RF
+    cost_time_NN = time_end_NN - time_begin_NN
+    # Compare the results of random forest and neural network
+    compareResults(dataFolderRANS, testResponses, testResponsesPred_RF, testResponsesPred_NN)
+    
+    xlabel = np.arange(2)
+    plt.bar(xlabel, [cost_time_RF, cost_time_NN], 0.4)
+    plt.ylabel('Cost time s')
+    plt.xticks(x, ('RF', 'NN'))
+    plt.show()
 
