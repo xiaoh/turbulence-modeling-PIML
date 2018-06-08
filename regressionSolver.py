@@ -140,10 +140,10 @@ def keras_nn(trainFeatures, trainResponses, testFeatures, Nepochs = 100):
     return testResponsesPred
 
 
-# In[15]:
+# In[61]:
 
 
-def plotXiEta(XiEta_RANS, testResponses, testResponsesPred, name):
+def plotXiEta(XiEta_RANS, testResponses, testResponsesPred, name, symbol='r^'):
     # Reconstruct Barycentric coordinates
     XiEta_DNS = XiEta_RANS + testResponses
     XiEta_ML = XiEta_RANS + testResponsesPred
@@ -159,14 +159,18 @@ def plotXiEta(XiEta_RANS, testResponses, testResponsesPred, name):
                    'ks', markerfacecolor='none', markeredgecolor='k',
                    markeredgewidth=2, markersize=10)
     p3, = plt.plot(XiEta_ML[:pointsNum:interval,0],XiEta_ML[:pointsNum:interval,1],
-                   'r^', markerfacecolor='none', markeredgecolor='r',
+                   symbol, markerfacecolor='none', #markeredgecolor='r',
                    markeredgewidth=2, markersize=10)
     lg = plt.legend([p1,p2,p3], ['RANS', 'DNS', name], loc = 0)
     lg.draw_frame(False)
     plt.ylim([0,3**0.5/2.0])
     plt.show()
-    
-def comparePlot(XiEta_RANS, testResponses, testResponsesPred_RF, testResponsesPred_NN):
+
+
+# In[62]:
+
+
+def comparePlotRFNN(XiEta_RANS, testResponses, testResponsesPred_RF, testResponsesPred_NN):
     
     XiEta_DNS = XiEta_RANS + testResponses
     XiEta_RF = XiEta_RANS + testResponsesPred_RF
@@ -193,7 +197,11 @@ def comparePlot(XiEta_RANS, testResponses, testResponsesPred_RF, testResponsesPr
     plt.ylim([0,3**0.5/2.0])
     plt.show()
 
-def iterateLines(dataFolderRANS, testResponses, testResponsesPred, name):
+
+# In[63]:
+
+
+def iterateLines(dataFolderRANS, testResponses, testResponsesPred, name, symbol='r^'):
     # Start index of different sample lines
     indexList = [0, 98, 191, 287, 385, 483, 581, 679, 777, 875, 971]
     # Make plots at x=2 and x=4
@@ -202,8 +210,12 @@ def iterateLines(dataFolderRANS, testResponses, testResponsesPred, name):
         startIndex = indexList[iterN-1]
         endIndex = indexList[iterN]
         plotXiEta(XiEta, testResponses[startIndex:endIndex,:], 
-                         testResponsesPred[startIndex:endIndex,:], name)
+                         testResponsesPred[startIndex:endIndex,:], name, symbol)
     #plt.show()
+
+
+# In[64]:
+
 
 def compareResults(dataFolderRANS, testResponses, testResponsesPred_RF, testResponsesPred_NN):
     ## compare the results in one plot
@@ -214,20 +226,20 @@ def compareResults(dataFolderRANS, testResponses, testResponsesPred_RF, testResp
         XiEta = np.loadtxt(dataFolderRANS + 'line' + str(iterN) + '_XiEta.xy')
         startIndex = indexList[iterN-1]
         endIndex = indexList[iterN]
-        comparePlot(XiEta, testResponses[startIndex:endIndex,:], 
+        comparePlotRFNN(XiEta, testResponses[startIndex:endIndex,:], 
                     testResponsesPred_RF[startIndex:endIndex,:], 
                     testResponsesPred_NN[startIndex:endIndex,:])
 
 
 # Now, plot the anisotropy at the two locations $x/H = 2$ and 4:
 
-# In[16]:
+# In[65]:
 
 
 Image(filename='figs/locations.png')
 
 
-# In[17]:
+# In[66]:
 
 
 # if __name__== "__main__":
@@ -244,10 +256,10 @@ iterateLines(dataFolderRANS, testResponses, testResponsesPred_RF, name='RF')
 plt.show()
 
 
-# In[ ]:
+# In[67]:
 
 
-Nepochs = 5000
+Nepochs = 1000
 time_begin_NN = time.time()
 # Make prediction via the neural network
 testResponsesPred_NN = keras_nn(trainFeatures, trainResponses, testFeatures, Nepochs)
@@ -256,17 +268,18 @@ time_end_NN = time.time()
 
 # ### Make plots of Reynolds stress anisotropy (NN results)
 
-# In[28]:
+# In[72]:
 
 
 dataFolderRANS = './database/pehill/XiEta-RANS/Re10595/'
-iterateLines(dataFolderRANS, testResponses, testResponsesPred_NN, name='NN')
+symbol = 'g+'
+iterateLines(dataFolderRANS, testResponses, testResponsesPred_NN, name='NN', symbol='m+')
 plt.show()
 
 
 # ## Compare the results of random forest and neural network
 
-# In[24]:
+# In[73]:
 
 
 compareResults(dataFolderRANS, testResponses, testResponsesPred_RF, testResponsesPred_NN)
@@ -274,8 +287,10 @@ plt.show()
 
 
 # ## Comparison of computational cost between RF and NN
+# 
+# The cost depends on the number of epoches, which is written in the title of the plot.
 
-# In[25]:
+# In[74]:
 
 
 cost_time_RF = time_end_RF - time_begin_RF
@@ -283,7 +298,8 @@ cost_time_NN = time_end_NN - time_begin_NN
 
 xlabel = np.arange(2)
 plt.bar(xlabel, [cost_time_RF, cost_time_NN], 0.4)
-plt.ylabel('Cost time s')
+plt.ylabel('CPU time (sec')
 plt.xticks(xlabel, ('RF', 'NN'))
+plt.title('Epoches = ' + str(Nepochs))
 plt.show()
 
