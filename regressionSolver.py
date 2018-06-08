@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[2]:
+# In[1]:
 
 
 from IPython.display import Image
@@ -32,7 +32,7 @@ from IPython.display import Image
 # **This code only performs Step 4.** (see the green-shaded box below in the flow chart). The training data prepared in Steps 1-3 are saved in _database_ folder.
 # 
 
-# In[4]:
+# In[2]:
 
 
 Image(filename='figs/PIML-algorithm.png')
@@ -55,13 +55,13 @@ Image(filename='figs/PIML-algorithm.png')
 
 # The input features consist of 12 variables (see Table 1 below and also Wang et al.)
 
-# In[4]:
+# In[3]:
 
 
 Image(filename='figs/features.png')
 
 
-# In[ ]:
+# In[4]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -79,7 +79,9 @@ from keras.models import Sequential
 from keras.layers import Dense
 
 import time
-# In[2]:
+
+
+# In[5]:
 
 
 def loadTrainingData(caseName, ReNum):
@@ -90,7 +92,7 @@ def loadTrainingData(caseName, ReNum):
     return trainFeatures, trainResponses
 
 
-# In[ ]:
+# In[6]:
 
 
 def loadTestData(caseName, ReNum):
@@ -101,7 +103,7 @@ def loadTestData(caseName, ReNum):
     return testFeatures, testResponses
 
 
-# In[3]:
+# In[7]:
 
 
 def randomForest(trainFeatures, trainResponses, testFeatures, maxFeatures = 'log2', nTree=100):
@@ -113,7 +115,11 @@ def randomForest(trainFeatures, trainResponses, testFeatures, maxFeatures = 'log
     testResponsesPred = regModel.predict(testFeatures)
     return testResponsesPred
 
-def keras_nn(trainFeatures, trainResponses, testFeatures):
+
+# In[8]:
+
+
+def keras_nn(trainFeatures, trainResponses, testFeatures, Nepochs = 100):
     
     '''
     This function is to construct neural network based on the training data and predict the 
@@ -128,19 +134,21 @@ def keras_nn(trainFeatures, trainResponses, testFeatures):
     model.add(Dense(2, activation='tanh'))
     model.compile(loss='mean_squared_error', optimizer='adam')
     # Training
-    model.fit(trainFeatures, trainResponses, epochs=100000, batch_size=200, verbose=0)
+    model.fit(trainFeatures, trainResponses, epochs=Nepochs, batch_size=200, verbose=0)
     # Prediction
     testResponsesPred = model.predict(testFeatures)
     return testResponsesPred
-# In[4]:
 
 
-def plotXiEta(XiEta_RANS, testResponses, testResponsesPred):
+# In[15]:
+
+
+def plotXiEta(XiEta_RANS, testResponses, testResponsesPred, name):
     # Reconstruct Barycentric coordinates
     XiEta_DNS = XiEta_RANS + testResponses
     XiEta_ML = XiEta_RANS + testResponsesPred
     # Plot Reynolds stress anisotropy in Barycentric triangle
-    interval = 1
+    interval = 2
     pointsNum = int(XiEta_RANS.shape[0])
     plt.figure()
     plt.plot([0,1,0.5,0.5,0],[0,0,3**0.5/2.0,3**0.5/2.0,0],'g-')
@@ -153,23 +161,11 @@ def plotXiEta(XiEta_RANS, testResponses, testResponsesPred):
     p3, = plt.plot(XiEta_ML[:pointsNum:interval,0],XiEta_ML[:pointsNum:interval,1],
                    'r^', markerfacecolor='none', markeredgecolor='r',
                    markeredgewidth=2, markersize=10)
-    lg = plt.legend([p1,p2,p3], ['RANS', 'DNS', 'ML'], loc = 0)
+    lg = plt.legend([p1,p2,p3], ['RANS', 'DNS', name], loc = 0)
     lg.draw_frame(False)
     plt.ylim([0,3**0.5/2.0])
     plt.show()
-
-def iterateLines(dataFolderRANS):
-    # Start index of different sample lines
-    indexList = [0, 98, 191, 287, 385, 483, 581, 679, 777, 875, 971]
-    # Make plots at x=2 and x=4
-    for iterN in [3,5]:
-        XiEta = np.loadtxt(dataFolderRANS + 'line' + str(iterN) + '_XiEta.xy')
-        startIndex = indexList[iterN-1]
-        endIndex = indexList[iterN]
-        plotXiEta(XiEta, testResponses[startIndex:endIndex,:], 
-                         testResponsesPred[startIndex:endIndex,:])
-    #plt.show()
-
+    
 def comparePlot(XiEta_RANS, testResponses, testResponsesPred_RF, testResponsesPred_NN):
     
     XiEta_DNS = XiEta_RANS + testResponses
@@ -196,7 +192,19 @@ def comparePlot(XiEta_RANS, testResponses, testResponsesPred_RF, testResponsesPr
     lg.draw_frame(False)
     plt.ylim([0,3**0.5/2.0])
     plt.show()
-    
+
+def iterateLines(dataFolderRANS, testResponses, testResponsesPred, name):
+    # Start index of different sample lines
+    indexList = [0, 98, 191, 287, 385, 483, 581, 679, 777, 875, 971]
+    # Make plots at x=2 and x=4
+    for iterN in [3,5]:
+        XiEta = np.loadtxt(dataFolderRANS + 'line' + str(iterN) + '_XiEta.xy')
+        startIndex = indexList[iterN-1]
+        endIndex = indexList[iterN]
+        plotXiEta(XiEta, testResponses[startIndex:endIndex,:], 
+                         testResponsesPred[startIndex:endIndex,:], name)
+    #plt.show()
+
 def compareResults(dataFolderRANS, testResponses, testResponsesPred_RF, testResponsesPred_NN):
     ## compare the results in one plot
     # Start index of different sample lines
@@ -213,43 +221,69 @@ def compareResults(dataFolderRANS, testResponses, testResponsesPred_RF, testResp
 
 # Now, plot the anisotropy at the two locations $x/H = 2$ and 4:
 
-# In[5]:
+# In[16]:
 
 
 Image(filename='figs/locations.png')
 
 
-# In[5]:
+# In[17]:
 
 
-if __name__== "__main__":
+# if __name__== "__main__":
     # Load data
-    trainFeatures, trainResponses = loadTrainingData('pehill', 'Re5600')
-    testFeatures, testResponses = loadTestData('pehill', 'Re10595')
-    time_begin_RF = time.time()
-    # Make prediction via the random forest regressor
-    testResponsesPred_RF = randomForest(trainFeatures, trainResponses, testFeatures, 6, 100)
-    time_end_RF = time.time()
-    # Make plots of Reynolds stress anisotropy
-    dataFolderRANS = './database/pehill/XiEta-RANS/Re10595/'
-    iterateLines(dataFolderRANS, testResponses, testResponsesPred_RF, name='RF')
-    
-    time_begin_NN = time.time()
-    # Make prediction via the neural network
-    testResponsesPred_NN = keras_nn(trainFeatures, trainResponses, testFeatures)
-    time_end_NN = time.time()
-    # Make plots of Reynolds stress anisotropy
-    dataFolderRANS = './database/pehill/XiEta-RANS/Re10595/'
-    iterateLines(dataFolderRANS, testResponses, testResponsesPred_NN, name='NN')
-    # The cost time of calculation
-    cost_time_RF = time_end_RF - time_begin_RF
-    cost_time_NN = time_end_NN - time_begin_NN
-    # Compare the results of random forest and neural network
-    compareResults(dataFolderRANS, testResponses, testResponsesPred_RF, testResponsesPred_NN)
-    
-    xlabel = np.arange(2)
-    plt.bar(xlabel, [cost_time_RF, cost_time_NN], 0.4)
-    plt.ylabel('Cost time s')
-    plt.xticks(x, ('RF', 'NN'))
-    plt.show()
+trainFeatures, trainResponses = loadTrainingData('pehill', 'Re5600')
+testFeatures, testResponses = loadTestData('pehill', 'Re10595')
+time_begin_RF = time.time()
+# Make prediction via the random forest regressor
+testResponsesPred_RF = randomForest(trainFeatures, trainResponses, testFeatures, 6, 100)
+time_end_RF = time.time()
+# Make plots of Reynolds stress anisotropy
+dataFolderRANS = './database/pehill/XiEta-RANS/Re10595/'
+iterateLines(dataFolderRANS, testResponses, testResponsesPred_RF, name='RF')
+plt.show()
+
+
+# In[ ]:
+
+
+Nepochs = 5000
+time_begin_NN = time.time()
+# Make prediction via the neural network
+testResponsesPred_NN = keras_nn(trainFeatures, trainResponses, testFeatures, Nepochs)
+time_end_NN = time.time()
+
+
+# ### Make plots of Reynolds stress anisotropy (NN results)
+
+# In[28]:
+
+
+dataFolderRANS = './database/pehill/XiEta-RANS/Re10595/'
+iterateLines(dataFolderRANS, testResponses, testResponsesPred_NN, name='NN')
+plt.show()
+
+
+# ## Compare the results of random forest and neural network
+
+# In[24]:
+
+
+compareResults(dataFolderRANS, testResponses, testResponsesPred_RF, testResponsesPred_NN)
+plt.show()
+
+
+# ## Comparison of computational cost between RF and NN
+
+# In[25]:
+
+
+cost_time_RF = time_end_RF - time_begin_RF
+cost_time_NN = time_end_NN - time_begin_NN
+
+xlabel = np.arange(2)
+plt.bar(xlabel, [cost_time_RF, cost_time_NN], 0.4)
+plt.ylabel('Cost time s')
+plt.xticks(xlabel, ('RF', 'NN'))
+plt.show()
 
