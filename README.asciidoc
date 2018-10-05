@@ -1,6 +1,6 @@
 # Data-driven Reynolds stress modeling with physics-informed machine learning
 
-Jinlong Wu, Carlos Michelén-Ströfer, Dr. Jianxun Wang, Heng Xiao
+Dr. Jinlong Wu, Carlos Michelén-Ströfer, Dr. Jianxun Wang, Heng Xiao
 
 
 A complex physical system characterized by a wide range of temporal and spatial scales, turbulence is among the last unsolved problems in classical physics that affects natural and engineered systems from sub-meter to planetary scales. Current simulations of turbulent flows rely on Reynolds Averaged Navier Stokes equations with closure models.  In light of the decades-long stagnation in traditional turbulence modeling, we proposed data-driven, physics-informed machine learning method for turbulence modeling.
