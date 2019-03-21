@@ -22,7 +22,7 @@ References
 
 - [[[Wu2018Physics]]] J.-L. Wu, H. Xiao and E. G. Paterson. Physics-informed machine learning approach for augmenting turbulence models: A comprehensive framework. *Physical Review Fluids*, 3, 074602, 1-28, 2018. https://doi.org/10.1103/PhysRevFluids.2.034603[DOI: 10.1103/PhysRevFluids.3.074602] 
 
-- [[[Wu2018Representation]]] J.-L. Wu, R. Sun, S. Laizet and H. Xiao. Representation of Reynolds stress perturbations with application in machine-learning-assisted turbulence modeling. *Computer Methods in Applied Mechanics and Engineering*. In Press, 2018. https://doi.org/10.1016/j.cma.2018.09.010[DOI: 10.1016/j.cma.2018.09.010] 
+- [[[Wu2018Representation]]] J.-L. Wu, R. Sun, S. Laizet and H. Xiao. Representation of Reynolds stress perturbations with application in machine-learning-assisted turbulence modeling. *Computer Methods in Applied Mechanics and Engineering*，346, 707-726, 2019. https://doi.org/10.1016/j.cma.2018.09.010[DOI: 10.1016/j.cma.2018.09.010] 
 
 - [[[Duraisamy2019Turbulence]]] K. Duraisamy, G. Iaccarino, and H. Xiao. Turbulence modeling in the age of data. *Annual Review of Fluid Mechanics*, 51, 357-377, 2019. https://doi.org/10.1146/annurev-fluid-010518-040547[DOI: 10.1146/annurev-fluid-010518-040547]
 
